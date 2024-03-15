@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traffic Light Detection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background-color: #4CAF50; /* Green */
+            border: none;
+            color: white;
+            padding: 10px 24px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+
+        .button-red {
+            background-color: #f44336; /* Red */
+        }
+
+        .button-yellow {
+            background-color: #ffeb3b; /* Yellow */
+        }
+
+        .button-green {
+            background-color: #4CAF50; /* Green */
+        }
+
+        .button:hover {
+            opacity: 0.8;
+        }
+
+        #result {
+            color:white;
+            margin-top: 20px;
+            font-size: 20px;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        #uploadButton {
+            background-color: #2196F3; /* Blue */
+        }
+
+        #uploadButton:hover {
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <h1>Traffic Light Detection</h1>
+
+    <div class="button-container">
+        <button class="button button-red" onclick="detectLight('red')">Red Light</button>
+        <button class="button button-yellow" onclick="detectLight('yellow')">Yellow Light</button>
+        <button class="button button-green" onclick="detectLight('green')">Green Light</button>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" onchange="handleFileUpload(event)">
+    <button id="uploadButton" class="button" onclick="openFileInput()">Upload Image</button>
+
+    <div id="result"></div>
+
+   <script>
+          async function detectLight(color) {
+    const response = await fetch('/upload', {
+        method: 'POST',
+        body: JSON.stringify({ color: color }),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    });
+    const data = await response.json();
+    document.getElementById('result').innerText = data.result;
+}
+
+function openFileInput() {
+    document.getElementById('fileInput').click();
+}
+
+function handleFileUpload(event) {
+    const file = event.target.files[0];
+    const formData = new FormData();
+    formData.append('file', file);
+    fetch('/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('result').innerText = data.result;
+    })
+    .catch(error => console.error('Error uploading file:', error));
+}
+   </script>
+</body>
+</html>
